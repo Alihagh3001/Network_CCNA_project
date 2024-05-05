@@ -1,0 +1,477 @@
+switch 0 :
+fa 3-4 - > valn 100
+fa 6-7 -> valn 50 
+interface range fa 0/1 - 2
+switchport mode trunk
+
+
+
+
+
+multilayer switch 0 :
+(prelab4-page no.5)
+vlan 100
+vlan 50 
+exit
+interface fa 0/1
+switchport trunk encapsulation dot1q
+switchport mode trunk 
+no shutdown
+exit
+ip routing
+
+interface vlan 100
+ip address 10.20.100.3 255.255.255.0
+no shutdown 
+exit
+interface vlan 50
+ip address 10.20.50.3 255.255.255.0
+no shutdown
+exit
+
+ip routing
+
+interface vlan 100
+standby 100 ip 10.20.100.1
+standby version 2
+standby 100 priority 120
+standby 100 preempt
+
+interface vlan 50
+standby 50 ip 10.20.50.1
+standby version 2
+standby 50 priority 60
+standby 50 preempt
+
+interface gi0/1
+no switchport
+ip address 50.60.70.1 255.0.0.0
+no shutdown
+router eigrp 10
+network 50.0.0.0
+network 10.20.100.0
+network 10.20.50.0
+
+
+
+
+
+
+
+
+multilayer switch 1 :
+(prelab5-page no.5)
+vlan 100
+vlan 50 
+exit
+interface fa 0/1
+switchport trunk encapsulation dot1q
+switchport mode trunk 
+no shutdown
+exit
+ip routing
+interface vlan 100
+ip address 10.20.100.2 255.255.255.0
+no shutdown 
+exit
+interface vlan 50
+ip address 10.20.50.2 255.255.255.0
+no shutdown
+exit
+
+ip routing
+
+interface vlan 100
+standby 100 ip 10.20.100.1
+standby version 2
+standby 100 priority 70
+standby 100 preempt
+
+interface vlan 50
+standby 50 ip 10.20.50.1
+standby version 2
+standby 50 priority 110
+standby 50 preempt
+
+interface gi0/1
+no switchport
+ip address 130.140.150.1 255.255.0.0
+no shutdown
+
+router eigrp 10
+network 130.140.0.0
+network 10.20.100.0
+network 10.20.50.0
+
+
+
+
+
+
+
+
+
+
+multilayer switch2:
+vlan 50
+vlan 100
+exit
+interface gig1/0/2
+switchport trunk allowd vlan 100,50
+switchport mode trunk
+no shutdown
+exit
+ip routing
+interface vlan 100
+ip address 180.7.100.1 255.255.255.0
+no shutdown
+exit
+interface vlan 50
+ip address 180.7.50.1 255.255.255.0
+no shutdown
+exit
+
+interface gi1/0/1
+no switchport
+ip address 26.13.7.2 255.0.0.0
+
+router ospf 10
+network 26.13.7.2 0.255.255.255 area 4
+area 4 range 26.0.0.0 255.0.0.0
+
+network 180.7.50.1 0.0.0.255 area 4
+area 4 range 180.7.50.0 255.255.255.0
+
+network 180.7.100.1 0.0.0.255 area 4
+area 4 range 180.7.100.0 255.255.255.0
+
+
+
+
+
+
+router 13 :
+interface gig0/1
+ip address 202.7.14.1 255.255.255.0
+no shutdown 
+interface gig0/2
+ip address 202.80.50.1 255.255.255.0
+no shutdown
+interface gi0/0
+ip address 8.9.13.2 255.0.0.0
+no shutdown
+router rip 
+version 2
+no auto-summary
+network 202.7.14.0
+network 202.80.50.0
+network 8.0.0.0
+
+router ospf 10
+network 8.9.13.2 0.255.255.255 area 1
+area 1 range 8.0.0.0 255.0.0.0
+
+router ospf 10
+redistribute rip
+exit
+router rip
+redistribute ospf 10 metric 10
+
+
+
+
+
+
+
+
+
+router 14 :
+router rip 
+version 2
+no auto-summary
+netwerk 5.0.0.0
+network 6.0.0.0
+
+interface range gig0/0 - 2
+no shutdown
+
+interface gig0/1
+ip address 5.40.10.1 255.0.0.0
+interface gig0/2
+ip address 6.250.202.1 255.0.0.0
+interface gig0/0
+ip address 34.11.35.2 255.0.0.0
+
+router ospf 10
+network 34.11.35.2 0.255.255.255 area 2
+area 2 range 34.0.0.0 255.0.0.0
+
+router ospf 10
+redistribute rip subnets
+exit
+router rip
+redistribute ospf 10 metric 10
+
+
+
+
+
+
+
+
+
+
+
+
+
+router 6:
+interface gi0/1
+ip address 8.9.13.1 255.0.0.0
+no shutdown
+interface gi0/0
+ip address 34.11.35.1 255.0.0.0
+no shutdown
+interface gi0/2
+ip address 19.1.2.1 255.0.0.0
+no shutdown
+
+router ospf 10
+network 34.11.35.1 0.255.255.255 area 2
+#-----(vared nashavad)----area 2 range 34.0.0.0 255.0.0.0
+
+network 8.9.13.1 0.255.255.255 area 1
+#-----(vared nashavad)----area 1 range 8.0.0.0 255.0.0.0
+
+network 19.1.2.1 0.255.255.255 area 0
+#-----(vared nashavad)----area 0 range 19.0.0.0 255.0.0.0
+
+
+
+
+
+
+
+
+router 11:
+interface gi0/1
+ip address 19.1.2.2 255.0.0.0
+no shutdown
+interface gi0/0
+ip address 80.20.40.2 255.0.0.0
+no shutdown
+interface gi0/2
+ip address 26.13.7.1 255.0.0.0
+no shutdown
+
+router ospf 10
+network 19.1.2.2 0.255.255.255 area 0
+#-----(vared nashavad)----area 0 range 19.0.0.0 255.0.0.0
+
+network 80.20.40.2 0.255.255.255 area 3
+#-----(vared nashavad)----area 3 range 80.0.0.0 255.0.0.0
+
+network 26.13.7.1 0.255.255.255 area 4
+#-----(vared nashavad)----area 4 range 26.0.0.0 255.0.0.0
+
+
+
+
+
+
+
+
+
+router 1 :
+interface gi0/1
+ip address 4.2.2.4 255.0.0.0
+no shutdown
+interface gi0/0
+ip address 80.20.40.1 255.0.0.0
+no shutdown
+
+
+router ospf 10
+network 80.20.40.1 0.255.255.255 area 3
+area 3 range 80.0.0.0 255.0.0.0
+
+ip route 17.0.0.0 255.0.0.0 4.4.4.4
+
+ip route 0.0.0.0 0.0.0.0 4.4.4.4
+
+router ospf 10
+redistribute static
+default originate
+
+
+
+
+
+
+router 2 :
+interface gi0/1
+ip address 17.18.19.2 255.0.0.0
+no shutdown
+interface gi0/0
+ip address 4.4.4.4 255.0.0.0
+no shutdown
+
+router eigrp 10
+network 17.0.0.0
+
+
+ip route 80.0.0.0 255.0.0.0 4.2.2.4
+
+ip route 0.0.0.0 0.0.0.0 4.2.2.4
+
+router eigrp 10
+redistribute static
+redistribute static metric 10 10 255 255 10
+
+
+
+
+
+
+
+
+
+router L_R1:
+interface gi0/1
+ip address 140.130.120.2 255.255.0.0
+no shutdown
+interface gi0/2
+ip address 49.59.69.2 255.0.0.0
+no shutdown
+
+router eigrp 10
+network 140.130.0.0
+network 49.0.0.0
+
+
+
+
+
+
+router L_R2:
+interface gi0/0/1
+ip address 17.18.19.1 255.0.0.0
+no shutdown
+interface se 0/1/0
+ip addrress 220.230.240.1 255.255.255.0
+no shutdown
+interface gi0/0/0
+ip address 140.130.120.1 255.255.0.0
+no shutdown
+
+router eigrp 10
+network 17.0.0.0
+network 140.130.0.0
+network 220.230.240.0
+
+
+
+
+
+
+router L_R3:
+interface gi0/0/0
+ip address 49.59.69.1 255.0.0.0
+no shutdown
+interface serial 0/1/0
+201.202.203.1 255.255.255.0
+no shutdown
+
+router eigrp 10
+network 201.202.203.0
+network 49.0.0.0
+
+
+
+
+
+router 3 :
+interface serial0/3/1
+ip address 220.230.240.2 255.255.255.0
+no shutdown
+interface serial0/3/0
+ip address 201.202.203.2 255.255.255.0
+no shutdown
+interface gi0/0
+ip address 130.140.150.2 255.255.0.0
+no shutdown
+interface gi0/1
+ip address 50.60.70.2 255.0.0.0
+no shutdown
+
+router eigrp 10
+network 220.230.240.0
+network 130.140.0.0
+network 50.0.0.0
+network 201.202.203.0
+
+
+
+
+
+
+router 19 :
+interface gig0/1
+no shutdown
+interface gig0/1.100
+encapsulation dot1q 100
+ip address 5.150.100.1 255.255.254.0
+exit
+interface gig0/1.200
+encapsulation dot1q 200
+ip address 5.150.200.1 255.255.255.0
+exit
+interface gig0/1.99
+encapsulation dot1q 99
+ip address 5.150.99.1 255.255.255.252
+exit
+
+interface gig0/0
+ip address 6.250.202.2 255.0.0.0
+no shutdown
+
+interface gig0/1.100
+ip helper-address 5.150.100.100
+
+interface gig0/1.200
+ip helper-address 5.150.200.200
+
+router rip 
+version 2
+no auto-summary
+network 5.0.0.0
+network 6.0.0.0
+
+
+
+
+
+
+
+router 17 :
+interface gig0/1
+no shutdown
+interface gig0/1.30
+encapsulation dot1q 30
+ip address 7.150.30.1 255.255.255.248
+exit
+interface gig0/1.50
+encapsulation dot1q 50
+ip address 7.150.50.1 255.255.255.248
+exit
+interface gig0/2
+no shutdown
+interface gig0/2
+ip address 7.150.40.1 255.255.255.248
+interface gig0/0
+#ip address 5.40.10.2 255.0.0.0
+no shutdown
+router rip 
+version 2
+no auto-summary
+network 5.0.0.0
+network 7.0.0.0
